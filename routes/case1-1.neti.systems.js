@@ -1,10 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var request = require("request");
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
-	res.send('Net Insight AB, load balancer');
+	res.send('case1-2.neti.systems');
 });
 
 router.post('/', function(req, res, next) {
