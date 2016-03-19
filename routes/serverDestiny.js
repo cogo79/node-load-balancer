@@ -6,8 +6,10 @@ function happened() {
 	var happenedResult;
 	if (destiny.length > 0) {
 		happenedResult = destiny.pop();
-		if (typeof happenedResult === 'number' && happenedResult <=3 && happenedResult > 0) {
-			return happenedResult;
+		if (typeof happenedResult === 'number') {
+			if (happenedResult === 200 || happenedResult === 418 || happenedResult === 500) {
+				return happenedResult;
+			}
 		} else {
 			return random();
 		}
@@ -18,7 +20,7 @@ function happened() {
 		var happenedResult = Math.random();
 		if (happenedResult < 0.333) return 200;
 		else if (happenedResult > 0.666) return 500;
-		else return 408;
+		else return 418;
 	}
 };
 
@@ -32,5 +34,6 @@ function willHappen(array) {
 };
 
 module.exports = {
-	happened: happened
+	happened: happened,
+	willHappen: willHappen
 }

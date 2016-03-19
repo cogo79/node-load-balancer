@@ -1,20 +1,30 @@
 var express = require('express');
 var router = express.Router();
+var serverDestiny = require('./serverDestiny');
 
 router.get('/', function(req, res, next) {
-	res.send('case1-2.neti.systems');
+	res.send('case1-1.neti.systems');
 });
 
 router.post('/', function(req, res, next) {
-	request({
-		uri: "http://www.sitepoint.com",
-		method: "POST",
-		timeout: 1000,
-		followRedirect: true,
-		maxRedirects: 10
-	}, function(error, response, body) {
-		console.log(body);
-	});
+	var happened = serverDestiny.happened();
+	switch(happened) {
+		case 500:
+			res.sendStatus(happened);
+			break;
+		case 418:
+			setTimeout(respond, 3000);
+			break;
+		default:
+			respond();
+	}
+	//res.sendStatus(serverDestiny.happened());
+	function respond() {
+		res.send({
+			"url": "http://video1.neti.systems/svt1?token=12345",
+			"secret": "abcdef"
+		});
+	};
 });
 
 module.exports = router;
