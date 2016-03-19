@@ -12,7 +12,7 @@
     "express": "~4.13.1",
     "jade": "~1.11.0",
     "morgan": "~1.6.1",
-    "request": "^2.69.0",
+    "request-json": "^0.5.5",
     "serve-favicon": "~2.3.0"
   }
 }

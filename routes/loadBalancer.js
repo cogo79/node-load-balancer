@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var request = require("request");
+var request = require("request-json");
+var client = request.createClient('http://localhost:3000/');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -8,14 +9,14 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-	request({
-		uri: "http://www.sitepoint.com",
-		method: "POST",
-		timeout: 1000,
-		followRedirect: true,
-		maxRedirects: 10
-	}, function(error, response, body) {
-		console.log(body);
+	console.log("load balancer POST req.body:", req.body);
+	client.post('case1-1.neti.systems', req.body, function(error, resFromServer, body) {
+		console.log("------------------------------------------------------------------");
+		console.log("18 error: ", error);
+		//console.log("18 response: ", response);
+		console.log("18 body: ", body);
+		console.log("------------------------------------------------------------------");
+		res.send(200);
 	});
 });
 
