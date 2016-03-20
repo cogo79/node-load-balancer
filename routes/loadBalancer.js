@@ -28,7 +28,7 @@ function loadBalancer(req, res) {
 				allocateStream(serverIterator.getServer(), req, allocateStreamCallback);
 			} else {
 				res.sendStatus(500);
-				console.log("Load balancer finished request");
+				console.log("Load balancer finished request. All servers failed.");
 			}
 		} else {
 			delete body.secret;
