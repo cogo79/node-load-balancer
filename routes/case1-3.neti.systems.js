@@ -14,7 +14,7 @@ router.post('/', function(req, res, next) {
 			res.sendStatus(happened);
 			break;
 		case 418:
-			setTimeout(respond, 3000);
+			setTimeout(respond, 1050);
 			break;
 		default:
 			respond();

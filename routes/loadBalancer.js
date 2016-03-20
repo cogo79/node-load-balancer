@@ -1,6 +1,5 @@
 var express = require('express');
 var request = require("request-json");
-var serverIterator = require("./serverIterator");
 
 var router = express.Router();
 var client = request.createClient('http://localhost:3000/');
@@ -17,15 +16,28 @@ router.post('/', function(req, res, next) {
 	loadBalancer(req, res);
 });
 
+var servers = ['case1-1.neti.systems', 'case1-2.neti.systems', 'case1-3.neti.systems'];
+var currentServerIndex = 0;
+function getServer() {
+	var i = currentServerIndex;
+	if (currentServerIndex <= 1) {
+		currentServerIndex++;
+	} else {
+		currentServerIndex = 0;
+	}
+	console.log("Will make request to server " + servers[i]);
+	return servers[i];
+}
+
 function loadBalancer(req, res) {
 	var trialsLeft = 3;
-	allocateStream(serverIterator.getServer(), req, allocateStreamCallback);
+	allocateStream(getServer(), req, allocateStreamCallback);
 	function allocateStreamCallback(statusCode, body) {
 		console.log();
 		if (statusCode === 500 || statusCode === 418) {
 			if (trialsLeft > 1) {
 				trialsLeft--;
-				allocateStream(serverIterator.getServer(), req, allocateStreamCallback);
+				allocateStream(getServer(), req, allocateStreamCallback);
 			} else {
 				res.sendStatus(500);
 				console.log("Load balancer finished request. All servers failed.");
