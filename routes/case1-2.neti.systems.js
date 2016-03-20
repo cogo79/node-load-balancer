@@ -7,6 +7,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
+	console.log("10 case2 server req.body: ", req.body);
 	var happened = serverDestiny.happened();
 	switch(happened) {
 		case 500:
@@ -21,7 +22,7 @@ router.post('/', function(req, res, next) {
 	//res.sendStatus(serverDestiny.happened());
 	function respond() {
 		res.send({
-			"url": "http://video1.neti.systems/svt2?token=12345",
+			"url": "http://video1.neti.systems/" + req.body.channelId + "?token=12345",
 			"secret": "abcdef"
 		});
 	};

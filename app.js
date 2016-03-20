@@ -8,8 +8,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var loadBalancer = require('./routes/loadBalancer');
 var case1 = require('./routes/case1-1.neti.systems');
-var case2 = require('./routes/case1-1.neti.systems');
-var case3 = require('./routes/case1-1.neti.systems');
+var case2 = require('./routes/case1-2.neti.systems');
+var case3 = require('./routes/case1-3.neti.systems');
 
 var app = express();
 

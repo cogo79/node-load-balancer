@@ -9,6 +9,8 @@ function happened() {
 		if (typeof happenedResult === 'number') {
 			if (happenedResult === 200 || happenedResult === 418 || happenedResult === 500) {
 				return happenedResult;
+			} else {
+				return random();
 			}
 		} else {
 			return random();
