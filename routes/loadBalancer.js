@@ -1,5 +1,5 @@
 var express = require('express');
-var request = require("request-json");
+var clientHandler = require("./clientHandler");
 
 var router = express.Router();
 console.log("var router = express.Router(); --> ", router);
@@ -33,27 +33,11 @@ router.post('/', function(req, res, next) {
 	}
 });
 
-var clients = [];
-clients.push(request.createClient('http://case1-1.neti.systems:3000/'));
-clients.push(request.createClient('http://case1-2.neti.systems:3000/'));
-clients.push(request.createClient('http://case1-3.neti.systems:3000/'));
-var currentClientIndex = 0;
-function getClient() {
-	var i = currentClientIndex;
-	if (currentClientIndex <= 1) {
-		currentClientIndex++;
-	} else {
-		currentClientIndex = 0;
-	}
-	console.log("Will make request to server " + clients[i].host);
-	return clients[i];
-}
-
 function allocateStream(route, req, callback) {
 	var toLate = false;
 	var madeIt = false;
 	setTimeout(myPatienceIsOver, 1000);
-	getClient().post(route, req.body, function(error, resFromServer, body) {
+	clientHandler.nextClient().post(route, req.body, function(error, resFromServer, body) {
 		//console.log("18 resFromServer: ", resFromServer);
 		if (!toLate) {
 			madeIt = true;
@@ -76,3 +60,4 @@ function allocateStream(route, req, callback) {
 }
 
 module.exports = router;
+

@@ -3,18 +3,18 @@ var router = express.Router();
 var serverDestiny = require('./serverDestiny');
 
 router.get('/', function(req, res, next) {
-	res.send('case1-1.neti.systems');
+	res.send('case1-2.neti.systems');
 });
 
 router.post('/', function(req, res, next) {
-	console.log("10 case1 server req.body: ", req.body);
+	console.log("10 case2 server req.body: ", req.body);
 	var happened = serverDestiny.happened();
 	switch(happened) {
 		case 500:
 			res.sendStatus(happened);
 			break;
 		case 418:
-			setTimeout(respond, 3000);
+			setTimeout(respond, 1050);
 			break;
 		default:
 			respond();
