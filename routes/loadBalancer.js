@@ -2,7 +2,7 @@ var express = require('express');
 var request = require("request-json");
 
 var router = express.Router();
-var client = request.createClient('http://localhost:3000/');
+console.log("var router = express.Router(); --> ", router);
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -13,31 +13,14 @@ router.post('/', function(req, res, next) {
 	console.log("************************************************************************************");
 	console.log("load balancer POST req.body:", req.body);
 	console.log();
-	loadBalancer(req, res);
-});
-
-var servers = ['case1-1.neti.systems', 'case1-2.neti.systems', 'case1-3.neti.systems'];
-var currentServerIndex = 0;
-function getServer() {
-	var i = currentServerIndex;
-	if (currentServerIndex <= 1) {
-		currentServerIndex++;
-	} else {
-		currentServerIndex = 0;
-	}
-	console.log("Will make request to server " + servers[i]);
-	return servers[i];
-}
-
-function loadBalancer(req, res) {
 	var trialsLeft = 3;
-	allocateStream(getServer(), req, allocateStreamCallback);
+	allocateStream("allocateStream", req, allocateStreamCallback);
 	function allocateStreamCallback(statusCode, body) {
 		console.log();
 		if (statusCode === 500 || statusCode === 418) {
 			if (trialsLeft > 1) {
 				trialsLeft--;
-				allocateStream(getServer(), req, allocateStreamCallback);
+				allocateStream("allocateStream", req, allocateStreamCallback);
 			} else {
 				res.sendStatus(500);
 				console.log("Load balancer finished request. All servers failed.");
@@ -48,13 +31,29 @@ function loadBalancer(req, res) {
 			console.log("Load balancer finished request");
 		}
 	}
+});
+
+var clients = [];
+clients.push(request.createClient('http://case1-1.neti.systems:3000/'));
+clients.push(request.createClient('http://case1-2.neti.systems:3000/'));
+clients.push(request.createClient('http://case1-3.neti.systems:3000/'));
+var currentClientIndex = 0;
+function getClient() {
+	var i = currentClientIndex;
+	if (currentClientIndex <= 1) {
+		currentClientIndex++;
+	} else {
+		currentClientIndex = 0;
+	}
+	console.log("Will make request to server " + clients[i].host);
+	return clients[i];
 }
 
-function allocateStream(server, req, callback) {
+function allocateStream(route, req, callback) {
 	var toLate = false;
 	var madeIt = false;
 	setTimeout(myPatienceIsOver, 1000);
-	client.post(server, req.body, function(error, resFromServer, body) {
+	getClient().post(route, req.body, function(error, resFromServer, body) {
 		//console.log("18 resFromServer: ", resFromServer);
 		if (!toLate) {
 			madeIt = true;
