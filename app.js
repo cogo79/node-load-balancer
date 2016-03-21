@@ -7,9 +7,9 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var loadBalancer = require('./routes/loadBalancer');
-var case1 = require('./routes/case1-1.neti.systems');
-var case2 = require('./routes/case1-2.neti.systems');
-var case3 = require('./routes/case1-3.neti.systems');
+var case1 = require('./tests/routes/case1-1.neti.systems');
+var case2 = require('./tests/routes/case1-2.neti.systems');
+var case3 = require('./tests/routes/case1-3.neti.systems');
 
 var app = express();
 
@@ -27,9 +27,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/allocateStream', loadBalancer);
-app.use('/case1-1.neti.systems', case1);
-app.use('/case1-2.neti.systems', case2);
-app.use('/case1-3.neti.systems', case3);
+app.use('/test/case1-1.neti.systems', case1);
+app.use('/test/case1-2.neti.systems', case2);
+app.use('/test/case1-3.neti.systems', case3);
 
 
 // catch 404 and forward to error handler
