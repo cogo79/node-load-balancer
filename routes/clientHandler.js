@@ -1,5 +1,3 @@
-console.log("clientHandler required");
-
 var singleton = function singleton(){
     //defining a var instead of this (works for variable & function) will create a private definition
     var request = require("request-json");
@@ -82,14 +80,3 @@ singleton.getInstance = function(){
  
 module.exports = singleton.getInstance();
 
-
-
-
-/*
-module.exports = {
-	nextClient: nextClient,
-	setToTestMode: setToTestMode,
-	setSharpMode: setSharpMode,
-	whatsGoingOn: whatsGoingOn
-}
-*/

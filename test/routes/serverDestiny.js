@@ -2,18 +2,12 @@ var singleton = function singleton(){
     //defining a var instead of this (works for variable & function) will create a private definition
 
  	var destiny = [];
-	console.log("serverDestiny required");
 	function happened() {
-		console.log("function happened() {");
 		var happenedResult;
 		if (destiny.length > 0) {
-			console.log("if (destiny.length > 0) { entered");
 			happenedResult = destiny.pop();
-			console.log("happenedResult = destiny.pop(); "+happenedResult);
 			if (typeof happenedResult === 'number') {
-				console.log("if (typeof happenedResult === 'number') { entered");
 				if (happenedResult === 200 || happenedResult === 418 || happenedResult === 500) {
-					console.log("if (happenedResult === 200 || happenedResult === 418 || happenedResult === 500) { entered");
 					return happenedResult;
 				} else {
 					return random();

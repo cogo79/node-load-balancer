@@ -2,7 +2,6 @@ var express = require('express');
 var clientHandler = require("./clientHandler");
 
 var router = express.Router();
-console.log("var router = express.Router(); --> ", router);
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -37,9 +36,7 @@ function allocateStream(route, req, callback) {
 	var toLate = false;
 	var madeIt = false;
 	setTimeout(myPatienceIsOver, 1000);
-	var ch = clientHandler.nextClient();
-	console.log("ch.host: "+ch.host);
-	ch.post(route, req.body, function(error, resFromServer, body) {
+	clientHandler.nextClient().post(route, req.body, function(error, resFromServer, body) {
 		//console.log("18 resFromServer: ", resFromServer);
 		if (!toLate) {
 			madeIt = true;

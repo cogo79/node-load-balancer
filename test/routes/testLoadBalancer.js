@@ -7,14 +7,14 @@ var request = require("request-json");
 
 router.get('/', function(req, res, next) {
 
-	console.log("\n\n\n\n\n\nStart server and load-balancer tests\n\n\n");
+	console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nUnit testing\n\nStart server and load-balancer tests\n\n\n");
 
 	clientHandler.setToTestMode();
 	var testPassed = "Test passed";
 	var testFailed = "Test failed";
 	var tests = {
-		succeeded: {},
-		failed: {}
+		succeeded: [],
+		failed: []
 	};
 	async.series([
 		function(cb) {
@@ -24,7 +24,8 @@ router.get('/', function(req, res, next) {
 				name: "Three 500 Errors",
 				description: "Load-balancer will get three 500 errors and test will assert that the load-balancer will respond with a 500 status code"
 			}
-			console.log(t1.name);
+			console.log("\n\n\n\n\n\nNew test: "+t1.name);
+			console.log();
 			console.log(t1.description);
 			console.log();
 			request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
@@ -35,13 +36,13 @@ router.get('/', function(req, res, next) {
 				console.log("18 resFromServer.statusCode: ", resFromServer.statusCode);
 				console.log("test ------------------------------------------------------------------");
 				if (resFromServer.statusCode === 500) {
-					console.log(testPassed);
+					console.log("\n"+testPassed);
 					t1.result = testPassed;
-					tests.succeeded.t1 = t1;
+					tests.succeeded.push(t1);
 				} else {
-					console.log(testFailed);
+					console.log("\n"+testFailed);
 					t1.result = testFailed;
-					tests.failed.t1 = t1;
+					tests.failed.push(t1);
 				}
 				console.log('\n\n\n');
 				cb();
@@ -49,16 +50,13 @@ router.get('/', function(req, res, next) {
 		},
 		function(cb) {
 			serverDestiny.willHappen([200,500,418,418,500,200,418]);
-			/*
-testVideoServerClients.push(request.createClient('http://localhost:3000/test/case1-1.neti.systems/'));
-	testVideoServerClients.push(request.createClient('http://localhost:3000/test/case1-2.neti.systems/'));
-	testVideoServerClients.push(request.createClient('http://localhost:3000/test/case1-3.neti.systems/'));
-	*/
+
 			var t2 = {
 				name: "Three shots",
 				description: "Load-balancer will get three requests and the first will succeed on the second shot on server case1-2.neti.systems. Next request will fail on server case1-2.neti.systems. Third request will succed on server case1-1.neti.systems"
 			}
-			console.log(t2.name);
+			console.log("\n\n\n\n\n\nNew test: "+t2.name);
+			console.log();
 			console.log(t2.description);
 			console.log();
 
@@ -111,7 +109,6 @@ testVideoServerClients.push(request.createClient('http://localhost:3000/test/cas
 						} else {
 							req3 = false;
 						}
-						console.log();
 						cb2();
 					});
 				}
@@ -120,13 +117,13 @@ testVideoServerClients.push(request.createClient('http://localhost:3000/test/cas
 					console.log(err);
 				}
 				if (req1 && req2 && req3) {
-					console.log(testPassed);
+					console.log("\n"+testPassed);
 					t2.result = testPassed;
-					tests.succeeded.t2 = t2;
+					tests.succeeded.push(t2);
 				} else {
-					console.log(testFailed);
+					console.log("\n"+testFailed);
 					t2.result = testFailed;
-					tests.failed.t2 = t2;
+					tests.failed.push(t2);
 				}
 				cb();
 			});
@@ -135,10 +132,11 @@ testVideoServerClients.push(request.createClient('http://localhost:3000/test/cas
 			serverDestiny.willHappen([200]);
 
 			var t3 = {
-				name: "Success",
+				name: "Success on first request",
 				description: "Load-balancers first request succeeds on server ."
 			}
-			console.log(t3.name);
+			console.log("\n\n\n\n\n\nNew test: "+t3.name);
+			console.log();
 			console.log(t3.description);
 			console.log();
 			request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
@@ -148,17 +146,15 @@ testVideoServerClients.push(request.createClient('http://localhost:3000/test/cas
 				console.log("18 body: ", body);
 				console.log("18 resFromServer.statusCode: ", resFromServer.statusCode);
 				console.log("test ------------------------------------------------------------------");
-				console.log("clientHandler.lastUsedClient: "+clientHandler.lastUsedClient());
 				if (resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/") {
-					console.log(testPassed);
+					console.log("\n"+testPassed);
 					t3.result = testPassed;
-					tests.succeeded.t3 = t3;
+					tests.succeeded.push(t3);
 				} else {
-					console.log(testFailed);
+					console.log("\n"+testFailed);
 					t3.result = testFailed;
-					tests.failed.t3 = t3;
+					tests.failed.push(t3);
 				}
-				console.log('\n\n\n');
 				cb();
 			});
 		}
@@ -166,6 +162,16 @@ testVideoServerClients.push(request.createClient('http://localhost:3000/test/cas
 		if (err) {
 			console.log(err);
 		}
+		console.log("\n\n\n\n");
+		if (tests.failed.length === 0) {
+			console.log("All tests passed.");	
+		} else if (tests.succeeded.length === 0) {
+			console.log("All tests failed.");	
+		} else {
+			console.log("Not all tests passed.");	
+		}
+		console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		
 		clientHandler.setSharpMode();
 		serverDestiny.willHappen([]);
 		res.status(200).json(tests);
