@@ -34,12 +34,6 @@ var singleton = function singleton(){
 		return lastUsedClientLocal.host;
 	}
 
-	function whatsGoingOn() {
-		console.log(clients[0].host);
-		console.log(clients[1].host);
-		console.log(clients[2].host);
-	}
-
 	function setToTestMode() {
 		defaultIndex = currentClientIndex;
 		currentClientIndex = testIndex;
@@ -55,7 +49,6 @@ var singleton = function singleton(){
 	this.nextClient = nextClient;
 	this.setToTestMode = setToTestMode;
 	this.setSharpMode = setSharpMode;
-	this.whatsGoingOn = whatsGoingOn;
 	this.lastUsedClient = lastUsedClient;
 
     if(singleton.caller != singleton.getInstance){
