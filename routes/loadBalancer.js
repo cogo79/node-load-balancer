@@ -37,7 +37,9 @@ function allocateStream(route, req, callback) {
 	var toLate = false;
 	var madeIt = false;
 	setTimeout(myPatienceIsOver, 1000);
-	clientHandler.nextClient().post(route, req.body, function(error, resFromServer, body) {
+	var ch = clientHandler.nextClient();
+	console.log("ch.host: "+ch.host);
+	ch.post(route, req.body, function(error, resFromServer, body) {
 		//console.log("18 resFromServer: ", resFromServer);
 		if (!toLate) {
 			madeIt = true;

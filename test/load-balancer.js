@@ -16,7 +16,8 @@ describe('All video servers responded to late', function() {
 		done();
 	});
 	after(function(done) {
-		/*serverDestiny.willHappen([]);
+		/*
+		serverDestiny.willHappen([]);
 		clientHandler.setSharpMode();
 		console.log("after");
  		clientHandler.whatsGoingOn();*/
