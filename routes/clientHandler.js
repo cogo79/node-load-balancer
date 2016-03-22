@@ -41,6 +41,7 @@ var singleton = function singleton(){
 	}
 
 	function setToTestMode() {
+		defaultIndex = currentClientIndex;
 		currentClientIndex = testIndex;
 		clients = testVideoServerClients;
 	}
