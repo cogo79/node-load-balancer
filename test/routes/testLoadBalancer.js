@@ -29,12 +29,6 @@ router.get('/', function(req, res, next) {
 			console.log(t1.description);
 			console.log();
 			request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-				//console.log("18 resFromServer: ", resFromServer);
-				console.log("test ------------------------------------------------------------------");
-				console.log("18 error: ", error);
-				console.log("18 body: ", body);
-				console.log("18 resFromServer.statusCode: ", resFromServer.statusCode);
-				console.log("test ------------------------------------------------------------------");
 				if (resFromServer.statusCode === 500) {
 					console.log("\n"+testPassed);
 					t1.result = testPassed;
@@ -64,12 +58,6 @@ router.get('/', function(req, res, next) {
 			async.series([
 				function(cb2) {
 					request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-						//console.log("18 resFromServer: ", resFromServer);
-						console.log("test ------------------------------------------------------------------");
-						console.log("18 error: ", error);
-						console.log("18 body: ", body);
-						console.log("18 resFromServer.statusCode: ", resFromServer.statusCode);
-						console.log("test ------------------------------------------------------------------");
 						if (resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/") {
 							req1 = true;
 						} else {
@@ -81,12 +69,6 @@ router.get('/', function(req, res, next) {
 				},
 				function(cb2) {
 					request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-						//console.log("18 resFromServer: ", resFromServer);
-						console.log("test ------------------------------------------------------------------");
-						console.log("18 error: ", error);
-						console.log("18 body: ", body);
-						console.log("18 resFromServer.statusCode: ", resFromServer.statusCode);
-						console.log("test ------------------------------------------------------------------");
 						if (resFromServer.statusCode === 500 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/") {
 							req2 = true;
 						} else {
@@ -98,12 +80,6 @@ router.get('/', function(req, res, next) {
 				},
 				function(cb2) {
 					request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-						//console.log("18 resFromServer: ", resFromServer);
-						console.log("test ------------------------------------------------------------------");
-						console.log("18 error: ", error);
-						console.log("18 body: ", body);
-						console.log("18 resFromServer.statusCode: ", resFromServer.statusCode);
-						console.log("test ------------------------------------------------------------------");
 						if (resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-1.neti.systems/") {
 							req3 = true;
 						} else {
@@ -140,12 +116,6 @@ router.get('/', function(req, res, next) {
 			console.log(t3.description);
 			console.log();
 			request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-				//console.log("18 resFromServer: ", resFromServer);
-				console.log("test ------------------------------------------------------------------");
-				console.log("18 error: ", error);
-				console.log("18 body: ", body);
-				console.log("18 resFromServer.statusCode: ", resFromServer.statusCode);
-				console.log("test ------------------------------------------------------------------");
 				if (resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/") {
 					console.log("\n"+testPassed);
 					t3.result = testPassed;

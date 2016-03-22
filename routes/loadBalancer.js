@@ -40,11 +40,11 @@ function allocateStream(route, req, callback) {
 		//console.log("18 resFromServer: ", resFromServer);
 		if (!toLate) {
 			madeIt = true;
-			console.log("------------------------------------------------------------------");
-			console.log("18 error: ", error);
-			console.log("18 body: ", body);
-			console.log("18 resFromServer.statusCode: ", resFromServer.statusCode);
-			console.log("------------------------------------------------------------------");
+			console.log("------------------------------- Response -------------------------------");
+			console.log("error: ", error);
+			console.log("body: ", body);
+			console.log("resFromServer.statusCode: ", resFromServer.statusCode);
+			console.log("------------------------------------------------------------------------");
 			callback(resFromServer.statusCode, body);
 		}
 	});
