@@ -10,122 +10,96 @@ router.get('/', function(req, res, next) {
 	console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nUnit testing\n\nStart server and load-balancer tests\n\n\n");
 
 	clientHandler.setToTestMode();
-	var testPassed = "Test passed";
-	var testFailed = "Test failed";
+	
 	var tests = {
 		succeeded: [],
 		failed: []
 	};
+	function startNewTest(test, performTest) {
+		console.log("\n\n\n\n\n\nNew test: "+test.name);
+		console.log();
+		console.log(test.description);
+		console.log();
+		performTest(assert);
+		function assert(testPassed) {
+			var testPassedStr = "Test passed";
+			var testFailedStr = "Test failed";
+			if (testPassed) {
+				console.log("\n"+testPassedStr);
+				test.result = testPassedStr;
+				tests.succeeded.push(test);
+			} else {
+				console.log("\n"+testFailedStr);
+				test.result = testFailedStr;
+				tests.failed.push(test);
+			}
+			console.log('\n\n\n');
+		}
+	}
 	async.series([
 		function(cb) {
 			serverDestiny.willHappen([500, 500, 500]);
-
-			var t1 = {
+			var test = {
 				name: "Three 500 Errors",
 				description: "Load-balancer will get three 500 errors and test will assert that the load-balancer will respond with a 500 status code"
-			}
-			console.log("\n\n\n\n\n\nNew test: "+t1.name);
-			console.log();
-			console.log(t1.description);
-			console.log();
-			request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-				if (resFromServer.statusCode === 500) {
-					console.log("\n"+testPassed);
-					t1.result = testPassed;
-					tests.succeeded.push(t1);
-				} else {
-					console.log("\n"+testFailed);
-					t1.result = testFailed;
-					tests.failed.push(t1);
-				}
-				console.log('\n\n\n');
-				cb();
+			};
+			startNewTest(test, function(assert) {
+				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 500);
+					cb();
+				});
 			});
 		},
 		function(cb) {
-			serverDestiny.willHappen([200,500,418,418,500,200,418]);
-
-			var t2 = {
-				name: "Three shots",
-				description: "Load-balancer will get three requests and the first will succeed on the second shot on server case1-2.neti.systems. Next request will fail on server case1-2.neti.systems. Third request will succed on server case1-1.neti.systems"
+			serverDestiny.willHappen([200,418]);
+			var test = {
+				name: "Success on second request",
+				description: "Load-balancer will succeed on the second request on server case1-2.neti.systems."
+			};
+			startNewTest(test, function(assert) {
+				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+					cb();
+				});
+			});
+		},
+		function(cb) {
+			serverDestiny.willHappen([418,418,500]);
+			var test = {
+				name: "Request to load-balancer failed.",
+				description: "Next request will fail on server case1-2.neti.systems."
 			}
-			console.log("\n\n\n\n\n\nNew test: "+t2.name);
-			console.log();
-			console.log(t2.description);
-			console.log();
-
-			var req1, req2, req3;
-			async.series([
-				function(cb2) {
-					request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-						if (resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/") {
-							req1 = true;
-						} else {
-							req1 = false;
-						}
-						console.log();
-						cb2();
-					});
-				},
-				function(cb2) {
-					request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-						if (resFromServer.statusCode === 500 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/") {
-							req2 = true;
-						} else {
-							req2 = false;
-						}
-						console.log();
-						cb2();
-					});
-				},
-				function(cb2) {
-					request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-						if (resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-1.neti.systems/") {
-							req3 = true;
-						} else {
-							req3 = false;
-						}
-						cb2();
-					});
-				}
-			], function(err) {
-				if (err) {
-					console.log(err);
-				}
-				if (req1 && req2 && req3) {
-					console.log("\n"+testPassed);
-					t2.result = testPassed;
-					tests.succeeded.push(t2);
-				} else {
-					console.log("\n"+testFailed);
-					t2.result = testFailed;
-					tests.failed.push(t2);
-				}
-				cb();
+			startNewTest(test, function(assert) {
+				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 500 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+					cb();
+				});
+			});
+		},
+		function(cb) {
+			serverDestiny.willHappen([200,500]);
+			var test = {
+				name: "Successfull response on second try.",
+				description: "Load-balancer will get successfull response second try on server case1-1.neti.systems"
+			}
+			startNewTest(test, function(assert) {
+				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-1.neti.systems/");
+					cb();
+				});
 			});
 		},
 		function(cb) {
 			serverDestiny.willHappen([200]);
-
-			var t3 = {
+			var test = {
 				name: "Success on first request",
-				description: "Load-balancers first request succeeds on server ."
+				description: "Load-balancers first request succeeds on server case1-2.neti.systems."
 			}
-			console.log("\n\n\n\n\n\nNew test: "+t3.name);
-			console.log();
-			console.log(t3.description);
-			console.log();
-			request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-				if (resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/") {
-					console.log("\n"+testPassed);
-					t3.result = testPassed;
-					tests.succeeded.push(t3);
-				} else {
-					console.log("\n"+testFailed);
-					t3.result = testFailed;
-					tests.failed.push(t3);
-				}
-				cb();
+			startNewTest(test, function(assert) {
+				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+					cb();
+				});
 			});
 		}
 	], function(err) {
@@ -133,7 +107,10 @@ router.get('/', function(req, res, next) {
 			console.log(err);
 		}
 		console.log("\n\n\n\n");
-		if (tests.failed.length === 0) {
+		console.log("Unit testing result:\nPassed: "+tests.succeeded.length+"      Failed: "+tests.failed.length+"\n");
+		if (tests.failed.length === 0 && tests.succeeded.length === 0) {
+			console.log("No unit tests was performed.");
+		} else if (tests.failed.length === 0) {
 			console.log("All tests passed.");	
 		} else if (tests.succeeded.length === 0) {
 			console.log("All tests failed.");	
