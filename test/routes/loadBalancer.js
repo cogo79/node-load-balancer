@@ -130,11 +130,6 @@ router.get('/allocateStream', function(req, res, next) {
 	});
 });
 
-/*
-router.post('/allocateStream', function(req, res, next) {
-	loadBalancer.passOn(req, res);
-});
-*/
 function createTestServer(serverName) {
 	router.post('/'+serverName+'/allocateStream', function(req, res, next) {
 		console.log("test "+serverName+" server req.body: ", req.body);
