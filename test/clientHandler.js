@@ -1,19 +1,18 @@
 const assert = require('assert');
+var clientHandler = require('../routes/clientHandler');
 
-describe('supertest test', function() {
+describe('Test client handler', function() {
 	
 	before(function(done) {
-
+		clientHandler.set
 		done();
 	});
 	after(function(done) {
 		
 		done();
 	});
- 	it('Test if mocha and supertest works any good for my load-balancer', function(done) {
- 		var a = "mocha and supertest works really well when testing http requests";
- 		var b = "Really?"
-		assert(a === b);
+ 	it('test', function(done) {
+ 		
 		done();
 	});
 });

@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
 	res.send('case1-3.neti.systems');
 });
 
-router.post('/', function(req, res, next) {
+router.post('/allocateStream', function(req, res, next) {
 	console.log("test case1-3.neti.systems server req.body: ", req.body);
 	var happened = serverDestiny.happened();
 	switch(happened) {

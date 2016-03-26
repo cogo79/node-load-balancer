@@ -2,15 +2,17 @@ var express = require('express');
 var async = require('Async');
 var router = express.Router();
 var serverDestiny = require('./serverDestiny');
-var clientHandler = require('../../routes/clientHandler');
+var loadBalancer = require('../../routes/loadBalancer');
+loadBalancer.setToTestMode();
 var request = require("request-json");
+
+var url = 'http://localhost:3000/test/testLoadBalancer/';
+var allocateStream = 'allocateStream';
 
 router.get('/', function(req, res, next) {
 
 	console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nUnit testing\n\nStart server and load-balancer tests\n\n\n");
 
-	clientHandler.setToTestMode();
-	
 	var tests = {
 		succeeded: [],
 		failed: []
@@ -44,7 +46,7 @@ router.get('/', function(req, res, next) {
 				description: "Load-balancer will get three 500 errors and test will assert that the load-balancer will respond with a 500 status code"
 			};
 			startNewTest(test, function(assert) {
-				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
+				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
 					assert(resFromServer.statusCode === 500);
 					cb();
 				});
@@ -57,8 +59,8 @@ router.get('/', function(req, res, next) {
 				description: "Load-balancer will succeed on the second request on server case1-2.neti.systems."
 			};
 			startNewTest(test, function(assert) {
-				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
 					cb();
 				});
 			});
@@ -70,8 +72,8 @@ router.get('/', function(req, res, next) {
 				description: "Next request will fail on server case1-2.neti.systems."
 			}
 			startNewTest(test, function(assert) {
-				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 500 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 500 && loadBalancer.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
 					cb();
 				});
 			});
@@ -83,8 +85,8 @@ router.get('/', function(req, res, next) {
 				description: "Load-balancer will get successfull response second try on server case1-1.neti.systems"
 			}
 			startNewTest(test, function(assert) {
-				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-1.neti.systems/");
+				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClient() === "http://localhost:3000/test/case1-1.neti.systems/");
 					cb();
 				});
 			});
@@ -96,8 +98,8 @@ router.get('/', function(req, res, next) {
 				description: "Load-balancers first request succeeds on server case1-2.neti.systems."
 			}
 			startNewTest(test, function(assert) {
-				request.createClient('http://localhost:3000/').post("allocateStream", {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 200 && clientHandler.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
+					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
 					cb();
 				});
 			});
@@ -119,10 +121,13 @@ router.get('/', function(req, res, next) {
 		}
 		console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		
-		clientHandler.setSharpMode();
 		serverDestiny.willHappen([]);
 		res.status(200).json(tests);
 	});
+});
+
+router.post('/allocateStream', function(req, res, next) {
+	loadBalancer.passOn(req, res);
 });
 
 module.exports = router;
