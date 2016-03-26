@@ -1,2 +1,2 @@
 Search filter:
-/Users/yhc3l/Desktop/case-backend-1/load-balancer/,-/Users/yhc3l/Desktop/case-backend-1/load-balancer/node_modules
+/Users/yhc3l/Desktop/case-backend-1/load-balancer/,-/Users/yhc3l/Desktop/case-backend-1/load-balancer/node_modules/*

@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
-require("./test/setupTestServers").setupTestServers(app);
+app.use('/test', require('./test/routes/loadBalancer'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

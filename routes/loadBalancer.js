@@ -5,30 +5,30 @@ function passOn(req, res) {
 	console.log("load balancer POST req.body:", req.body);
 	console.log();
 	var trialsLeft = 3;
-	allocateStream("allocateStream", req, allocateStreamCallback);
+	allocateStream(req, allocateStreamCallback);
 	function allocateStreamCallback(statusCode, body) {
 		console.log();
 		if (statusCode === 500 || statusCode === 418) {
 			if (trialsLeft > 1) {
 				trialsLeft--;
-				allocateStream("allocateStream", req, allocateStreamCallback);
+				allocateStream(req, allocateStreamCallback);
 			} else {
-				res.sendStatus(500);
+				return res.sendStatus(500);
 				console.log("Load balancer finished request. All servers failed.");
 			}
 		} else {
 			delete body.secret;
-			res.status(statusCode).json(body);
 			console.log("Load balancer finished request");
+			return res.status(statusCode).json(body);
 		}
 	}
 }
 
-function allocateStream(route, req, callback) {
+function allocateStream(req, callback) {
 	var toLate = false;
 	var madeIt = false;
 	setTimeout(myPatienceIsOver, 1000);
-	nextClient().post(route, req.body, function(error, resFromServer, body) {
+	nextClient().post("allocateStream", req.body, function(error, resFromServer, body) {
 		//console.log("18 resFromServer: ", resFromServer);
 		if (!toLate) {
 			madeIt = true;
@@ -51,19 +51,20 @@ function allocateStream(route, req, callback) {
 }
 
 
-
+var sharpIndex = 0;
 var sharpVideoServerClients = [];
 sharpVideoServerClients.push(request.createClient('http://case1-1.neti.systems:3000/'));
 sharpVideoServerClients.push(request.createClient('http://case1-2.neti.systems:3000/'));
 sharpVideoServerClients.push(request.createClient('http://case1-3.neti.systems:3000/'));
 
+var testIndex = 0;
 var testVideoServerClients = [];
 testVideoServerClients.push(request.createClient('http://localhost:3000/test/case1-1.neti.systems/'));
 testVideoServerClients.push(request.createClient('http://localhost:3000/test/case1-2.neti.systems/'));
 testVideoServerClients.push(request.createClient('http://localhost:3000/test/case1-3.neti.systems/'));
 
 var clients = sharpVideoServerClients;
-var currentClientIndex = 0;
+var currentClientIndex = sharpIndex;
 
 var lastUsedClientLocal = null;
 function nextClient() {
@@ -78,22 +79,25 @@ function nextClient() {
 	return clients[i];
 }
 
-function lastUsedClient() { // Intended for testing only (so far that is)
+function lastUsedClientHost() { // Intended for testing only (so far that is)
 	return lastUsedClientLocal.host;
-}
-
-function totalAmountOfServers() {
-	return clients.length;
 }
 
 function setToTestMode() {
 	clients = testVideoServerClients;
+	sharpIndex = currentClientIndex;
+	currentClientIndex = testIndex;
+}
+
+function setToSharpMode() {
+	clients = sharpVideoServerClients;
+	currentClientIndex = sharpIndex;
 }
 
 module.exports = {
 	passOn: passOn,
+	lastUsedClientHost: lastUsedClientHost,
 	setToTestMode: setToTestMode,
-	lastUsedClient: lastUsedClient,
-	totalAmountOfServers: totalAmountOfServers
+	setToSharpMode: setToSharpMode
 };
 

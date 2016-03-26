@@ -3,13 +3,16 @@ var async = require('Async');
 var router = express.Router();
 var serverDestiny = require('./serverDestiny');
 var loadBalancer = require('../../routes/loadBalancer');
-loadBalancer.setToTestMode();
 var request = require("request-json");
 
-var url = 'http://localhost:3000/test/testLoadBalancer/';
-var allocateStream = 'allocateStream';
 
-router.get('/', function(req, res, next) {
+
+router.get('/allocateStream', function(req, res, next) {
+
+	var url = 'http://localhost:3000/';
+	var allocateStream = 'allocateStream';
+
+	loadBalancer.setToTestMode();
 
 	console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nUnit testing\n\nStart server and load-balancer tests\n\n\n");
 
@@ -60,7 +63,7 @@ router.get('/', function(req, res, next) {
 			};
 			startNewTest(test, function(assert) {
 				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClientHost() === "http://localhost:3000/test/case1-2.neti.systems/");
 					cb();
 				});
 			});
@@ -73,7 +76,7 @@ router.get('/', function(req, res, next) {
 			}
 			startNewTest(test, function(assert) {
 				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 500 && loadBalancer.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+					assert(resFromServer.statusCode === 500 && loadBalancer.lastUsedClientHost() === "http://localhost:3000/test/case1-2.neti.systems/");
 					cb();
 				});
 			});
@@ -86,7 +89,7 @@ router.get('/', function(req, res, next) {
 			}
 			startNewTest(test, function(assert) {
 				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClient() === "http://localhost:3000/test/case1-1.neti.systems/");
+					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClientHost() === "http://localhost:3000/test/case1-1.neti.systems/");
 					cb();
 				});
 			});
@@ -99,7 +102,7 @@ router.get('/', function(req, res, next) {
 			}
 			startNewTest(test, function(assert) {
 				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClient() === "http://localhost:3000/test/case1-2.neti.systems/");
+					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClientHost() === "http://localhost:3000/test/case1-2.neti.systems/");
 					cb();
 				});
 			});
@@ -121,13 +124,41 @@ router.get('/', function(req, res, next) {
 		}
 		console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 		
+		loadBalancer.setToSharpMode();
 		serverDestiny.willHappen([]);
 		res.status(200).json(tests);
 	});
 });
 
+/*
 router.post('/allocateStream', function(req, res, next) {
 	loadBalancer.passOn(req, res);
 });
+*/
+function createTestServer(serverName) {
+	router.post('/'+serverName+'/allocateStream', function(req, res, next) {
+		console.log("test "+serverName+" server req.body: ", req.body);
+		var happened = serverDestiny.happened();
+		switch(happened) {
+			case 500:
+				res.sendStatus(happened);
+				break;
+			case 418:
+				setTimeout(respond, 1050);
+				break;
+			default:
+				respond();
+		}
+		function respond() {
+			res.send({
+				"url": "http://video1.neti.systems/" + req.body.channelId + "?token=12345",
+				"secret": "abcdef"
+			});
+		};
+	});
+}
+createTestServer("case1-1.neti.systems");
+createTestServer("case1-2.neti.systems");
+createTestServer("case1-3.neti.systems");
 
 module.exports = router;

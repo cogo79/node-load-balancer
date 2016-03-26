@@ -4,5 +4,5 @@ curl -H Content-Type:application/json -X POST -d '{"channelId":"tv3"}' http://lo
 
 Unit testing
 Run this curl command when server is running:
-curl http://localhost:3000/test/testLoadBalancer
+curl http://localhost:3000/test/allocateStream
 
