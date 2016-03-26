@@ -43,8 +43,8 @@ function allocateStream(req, callback) {
 
 	function myPatienceIsOver () {
 		if (madeIt === false) {
-			console.log(">>>>>>>>>>>>>>>>>>>> load balancer ran out of patience!");
 			toLate = true;
+			console.log(">>>>>>>>>>>>>>>>>>>> load balancer ran out of patience!");
 			callback(418, null);
 		}
 	};
@@ -69,7 +69,7 @@ var currentClientIndex = sharpIndex;
 var lastUsedClientLocal = null;
 function nextClient() {
 	var i = currentClientIndex;
-	if (currentClientIndex <= 1) {
+	if (currentClientIndex <= clients.length - 2) {
 		currentClientIndex++;
 	} else {
 		currentClientIndex = 0;

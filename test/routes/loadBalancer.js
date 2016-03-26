@@ -5,8 +5,6 @@ var serverDestiny = require('./serverDestiny');
 var loadBalancer = require('../../routes/loadBalancer');
 var request = require("request-json");
 
-
-
 router.get('/allocateStream', function(req, res, next) {
 
 	var url = 'http://localhost:3000/';
