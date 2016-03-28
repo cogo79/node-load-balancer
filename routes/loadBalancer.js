@@ -1,3 +1,5 @@
+"use strict";
+
 var request = require("request-json");
 
 function passOn(req, res) {

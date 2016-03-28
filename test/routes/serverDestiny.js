@@ -1,3 +1,5 @@
+"use strict";
+
 var destiny = [];
 
 function happened() {

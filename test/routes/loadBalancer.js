@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express');
 var async = require('Async');
 var router = express.Router();

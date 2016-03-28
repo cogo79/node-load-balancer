@@ -1,5 +1,6 @@
-const assert = require('assert');
+"use strict";
 
+const assert = require('assert');
 
 describe('Test load-balancer', function() {
 	/*
