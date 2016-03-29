@@ -1,9 +1,8 @@
 "use strict";
 
 var express = require('express');
-var async = require('Async');
 var router = express.Router();
-var serverDestiny = require('./serverDestiny');
+var testServerDestiny = require('./testServerDestiny')();
 var request = require("request-json");
 
 var sharpVideoServerClients = [];
@@ -33,26 +32,31 @@ router.post('/allocateStream', function(req, res, next) {
 
 router.post('/test/allocateStream', function(req, res, next) {
 
-	serverDestiny.willHappen(req.body.serverDestiny);
+	if (req.body.firstTest) {
+		loadBalancerTest.setIndex(0);
+		console.log("\n\n\n\n\n\n\n\n\n\n\nUnit testing\n\n\n\n\n");
+	}
+
 	if (req.body.startIndex) {
 		loadBalancerTest.setIndex(req.body.startIndex);
 		delete req.body.startIndex;
 	}
-	// delete req.body.serverDestiny;
+
+	testServerDestiny.willHappen(req.body.testServerDestiny);
+	delete req.body.testServerDestiny;
+
 	loadBalancerTest.passOn(req, res, function loadBalancerTestDone(res, statusCode, body) {
 		body.lastUsedClientHost = loadBalancerTest.lastUsedClientHost();
 		body.statusCode = statusCode;
-		if (req.body.lastTest) {
-			loadBalancerTest.setIndex(0);
-		}
+		
 		res.status(200).json(body);
 	});
 });
 
 function createTestServer(serverName) {
 	router.post('/test/'+serverName+'/allocateStream', function(req, res, next) {
-		console.log("test "+serverName+" server req.body: ", req.body);
-		var happened = serverDestiny.happened();
+		console.log("Test server "+serverName+", req.body: \n", req.body);
+		var happened = testServerDestiny.happened();
 		switch(happened) {
 			case 500:
 				res.sendStatus(happened);

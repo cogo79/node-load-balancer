@@ -1,7 +1,7 @@
 "use strict";
 module.exports = function newLoadBalancer(clients) {
 
-	function passOn(req, res, callback2) {
+	function passOn(req, res, callback) {
 		console.log("************************************************************************************");
 		console.log("load balancer POST req.body:", req.body);
 		console.log();
@@ -15,13 +15,12 @@ module.exports = function newLoadBalancer(clients) {
 					allocateStream(req, allocateStreamCallback);
 				} else {
 					console.log("Load balancer finished request. All servers failed.");
-					callback2(res, 500, {});
-					// res.sendStatus(500);
+					callback(res, 500, {});
 				}
 			} else {
 				delete body.secret;
-				console.log("Load balancer finished request");
-				callback2(res, statusCode, body);
+				console.log("Load balancer finished request successfully.");
+				callback(res, statusCode, body);
 			}
 		}
 	}
@@ -46,7 +45,7 @@ module.exports = function newLoadBalancer(clients) {
 		function myPatienceIsOver () {
 			if (madeIt === false) {
 				toLate = true;
-				console.log(">>>>>>>>>>>>>>>>>>>> load balancer timed out!");
+				console.log(">>>>>>>>>>>>>>>>>>>> Load-balancer timed out!");
 				callback(418, null);
 			}
 		};
@@ -75,8 +74,13 @@ module.exports = function newLoadBalancer(clients) {
 		return clients.length;
 	}
 	function setIndex(i) {
-		currentClientIndex = i;
-		lastUsedClientLocal = clients[i];
+		if (i >= 0 && i <= clients.length-1 && typeof i === "number") {
+			currentClientIndex = i;
+			lastUsedClientLocal = clients[i];
+		}
+	}
+	function index() {
+		return currentClientIndex;
 	}
 	function setTimeOut(newTimeOut) {
 		timeOut = newTimeOut;
@@ -87,6 +91,7 @@ module.exports = function newLoadBalancer(clients) {
 		lastUsedClientHost: lastUsedClientHost,
 		clientsLength: clientsLength,
 		setIndex: setIndex,
+		index: index,
 		setTimeOut: setTimeOut
 	}
 }
