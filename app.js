@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
-app.use('/test', require('./test/routes/loadBalancer'));
+//app.use('/test', require('./test/routes/loadBalancer'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -60,3 +60,9 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
+
+var kalle = require("./person")("Kalle");
+var peter = require("./person")("Peter");
+console.log(kalle.name);
+console.log(peter.name);

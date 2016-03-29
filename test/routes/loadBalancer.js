@@ -7,7 +7,53 @@ var serverDestiny = require('./serverDestiny');
 var loadBalancer = require('../../routes/loadBalancer');
 var request = require("request-json");
 
-router.get('/allocateStream', function(req, res, next) {
+// GET home page.
+router.get('/', function(req, res, next) {
+	res.render('index', { title: '© Net Insight AB, load-balancer' });
+});
+
+router.post('/allocateStream', function(req, res, next) {
+	loadBalancer.passOn(req, res);
+});
+
+router.post('/test/allocateStream', function(req, res, next) {
+	loadBalancer.setToTestMode();
+	serverDestiny.willHappen(req.body.serverDestiny);
+	delete req.body.serverDestiny;
+	request.createClient('http://localhost:3000/').post('allocateStream', req.body, function(error, resFromServer, body) {
+		assert(resFromServer.statusCode === 500);
+		cb();
+	});
+});
+
+function createTestServer(serverName) {
+	router.post('/'+serverName+'/allocateStream', function(req, res, next) {
+		console.log("test "+serverName+" server req.body: ", req.body);
+		var happened = serverDestiny.happened();
+		switch(happened) {
+			case 500:
+				res.sendStatus(happened);
+				break;
+			case 418:
+				setTimeout(respond, 1050);
+				break;
+			default:
+				respond();
+		}
+		function respond() {
+			res.send({
+				"url": "http://video1.neti.systems/" + req.body.channelId + "?token=12345",
+				"secret": "abcdef"
+			});
+		};
+	});
+}
+createTestServer("case1-1.neti.systems");
+createTestServer("case1-2.neti.systems");
+createTestServer("case1-3.neti.systems");
+
+
+router.get('/test/allocateStream', function(req, res, next) {
 
 	var url = 'http://localhost:3000/';
 	var allocateStream = 'allocateStream';
@@ -129,31 +175,5 @@ router.get('/allocateStream', function(req, res, next) {
 		res.status(200).json(tests);
 	});
 });
-
-function createTestServer(serverName) {
-	router.post('/'+serverName+'/allocateStream', function(req, res, next) {
-		console.log("test "+serverName+" server req.body: ", req.body);
-		var happened = serverDestiny.happened();
-		switch(happened) {
-			case 500:
-				res.sendStatus(happened);
-				break;
-			case 418:
-				setTimeout(respond, 1050);
-				break;
-			default:
-				respond();
-		}
-		function respond() {
-			res.send({
-				"url": "http://video1.neti.systems/" + req.body.channelId + "?token=12345",
-				"secret": "abcdef"
-			});
-		};
-	});
-}
-createTestServer("case1-1.neti.systems");
-createTestServer("case1-2.neti.systems");
-createTestServer("case1-3.neti.systems");
 
 module.exports = router;
