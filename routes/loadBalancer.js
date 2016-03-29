@@ -21,18 +21,17 @@ module.exports = function newLoadBalancer(clients) {
 			} else {
 				delete body.secret;
 				console.log("Load balancer finished request");
-				//return res.status(statusCode).json(body);
 				callback2(res, statusCode, body);
 			}
 		}
 	}
 
+	var timeOut = 1000;
 	function allocateStream(req, callback) {
 		var toLate = false;
 		var madeIt = false;
-		setTimeout(myPatienceIsOver, 1000);
+		setTimeout(myPatienceIsOver, timeOut);
 		nextClient().post("allocateStream", req.body, function(error, resFromServer, body) {
-			//console.log("18 resFromServer: ", resFromServer);
 			if (!toLate) {
 				madeIt = true;
 				console.log("------------------------------- Response -------------------------------");
@@ -47,7 +46,7 @@ module.exports = function newLoadBalancer(clients) {
 		function myPatienceIsOver () {
 			if (madeIt === false) {
 				toLate = true;
-				console.log(">>>>>>>>>>>>>>>>>>>> load balancer ran out of patience!");
+				console.log(">>>>>>>>>>>>>>>>>>>> load balancer timed out!");
 				callback(418, null);
 			}
 		};
@@ -79,12 +78,16 @@ module.exports = function newLoadBalancer(clients) {
 		currentClientIndex = i;
 		lastUsedClientLocal = clients[i];
 	}
+	function setTimeOut(newTimeOut) {
+		timeOut = newTimeOut;
+	}
 
 	return {
 		passOn: passOn,
 		lastUsedClientHost: lastUsedClientHost,
 		clientsLength: clientsLength,
-		setIndex: setIndex
+		setIndex: setIndex,
+		setTimeOut: setTimeOut
 	}
 }
 

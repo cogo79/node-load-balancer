@@ -18,6 +18,7 @@ testVideoServerClients.push(request.createClient('http://localhost:3000/test/cas
 
 var loadBalancer = require('./loadBalancer')(sharpVideoServerClients);
 var loadBalancerTest = require('./loadBalancer')(testVideoServerClients);
+loadBalancerTest.setTimeOut(500);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -41,7 +42,9 @@ router.post('/test/allocateStream', function(req, res, next) {
 	loadBalancerTest.passOn(req, res, function loadBalancerTestDone(res, statusCode, body) {
 		body.lastUsedClientHost = loadBalancerTest.lastUsedClientHost();
 		body.statusCode = statusCode;
-		loadBalancerTest.setIndex(0);
+		if (req.body.lastTest) {
+			loadBalancerTest.setIndex(0);
+		}
 		res.status(200).json(body);
 	});
 });
@@ -55,7 +58,7 @@ function createTestServer(serverName) {
 				res.sendStatus(happened);
 				break;
 			case 418:
-				setTimeout(respond, 1050);
+				setTimeout(respond, 550);
 				break;
 			default:
 				respond();

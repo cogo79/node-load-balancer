@@ -61,8 +61,5 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
+console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHere we go!");
 
-var kalle = require("./person")("Kalle");
-var peter = require("./person")("Peter");
-console.log(kalle.name);
-console.log(peter.name);
