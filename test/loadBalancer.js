@@ -56,18 +56,3 @@ describe("Test load-balancer", function() {
 	});
 
 });
-/*
-		function(cb) {
-			serverDestiny.willHappen([200]);
-			var test = {
-				name: "Success on first request",
-				description: "Load-balancers first request succeeds on server case1-2.neti.systems."
-			}
-			startNewTest(test, function(assert) {
-				request.createClient(url).post(allocateStream, {"channelId":"svt1"}, function(error, resFromServer, body) {
-					assert(resFromServer.statusCode === 200 && loadBalancer.lastUsedClientHost() === "http://localhost:3000/test/case1-2.neti.systems/");
-					cb();
-				});
-			});
-		}
-		*/
