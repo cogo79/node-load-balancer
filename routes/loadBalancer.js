@@ -1,7 +1,7 @@
 "use strict";
 module.exports = function newLoadBalancer(clients) {
 
-	function passOn(req, res, callback) {
+	function passOn(req, callback) {
 		console.log("************************************************************************************");
 		console.log("load balancer POST req.body:", req.body);
 		console.log();
@@ -15,12 +15,12 @@ module.exports = function newLoadBalancer(clients) {
 					allocateStream(req, allocateStreamCallback);
 				} else {
 					console.log("Load balancer finished request. All servers failed.");
-					callback(res, 500, {});
+					callback(500, {});
 				}
 			} else {
 				delete body.secret;
 				console.log("Load balancer finished request successfully.");
-				callback(res, statusCode, body);
+				callback(statusCode, body);
 			}
 		}
 	}

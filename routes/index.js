@@ -25,7 +25,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/allocateStream', function(req, res, next) {
-	loadBalancer.passOn(req, res, function loadBalancerDone(res, statusCode, body) {
+	loadBalancer.passOn(req, function loadBalancerDone(statusCode, body) {
 		res.status(statusCode).json(body);
 	});
 });
@@ -45,7 +45,7 @@ router.post('/test/allocateStream', function(req, res, next) {
 	testServerDestiny.willHappen(req.body.testServerDestiny);
 	delete req.body.testServerDestiny;
 
-	loadBalancerTest.passOn(req, res, function loadBalancerTestDone(res, statusCode, body) {
+	loadBalancerTest.passOn(req, function loadBalancerTestDone(statusCode, body) {
 		body.lastUsedClientHost = loadBalancerTest.lastUsedClientHost();
 		body.statusCode = statusCode;
 		
