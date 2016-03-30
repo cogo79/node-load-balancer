@@ -33,12 +33,12 @@ router.post('/allocateStream', function(req, res, next) {
 router.post('/test/allocateStream', function(req, res, next) {
 
 	if (req.body.firstTest) {
-		loadBalancerTest.setIndex(0);
+		loadBalancerTest.getClientIterator().setIndex(0);
 		console.log("\n\n\n\n\n\n\n\n\n\n\nUnit testing\n\n\n\n\n");
 	}
 
 	if (req.body.startIndex) {
-		loadBalancerTest.setIndex(req.body.startIndex);
+		loadBalancerTest.getClientIterator().setIndex(req.body.startIndex);
 		delete req.body.startIndex;
 	}
 
@@ -46,7 +46,7 @@ router.post('/test/allocateStream', function(req, res, next) {
 	delete req.body.testServerDestiny;
 
 	loadBalancerTest.passOn(req, function loadBalancerTestDone(statusCode, body) {
-		body.lastUsedClientHost = loadBalancerTest.lastUsedClientHost();
+		body.lastUsedClientHost = loadBalancerTest.getClientIterator().getPrevious().host;
 		body.statusCode = statusCode;
 		
 		res.status(200).json(body);

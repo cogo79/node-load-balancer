@@ -1,6 +1,6 @@
 "use strict";
 module.exports = function newLoadBalancer(clients) {
-
+	var clientIterator = require('./iterator')(clients);
 	function passOn(req, callback) {
 		console.log("************************************************************************************");
 		console.log("load balancer POST req.body:", req.body);
@@ -30,7 +30,9 @@ module.exports = function newLoadBalancer(clients) {
 		var toLate = false;
 		var madeIt = false;
 		setTimeout(myPatienceIsOver, timeOut);
-		nextClient().post("allocateStream", req.body, function(error, resFromServer, body) {
+		var nextClient = clientIterator.getNext();
+		console.log("Will make request to server " + nextClient.host);
+		nextClient.post("allocateStream", req.body, function(error, resFromServer, body) {
 			if (!toLate) {
 				madeIt = true;
 				console.log("------------------------------- Response -------------------------------");
@@ -51,48 +53,18 @@ module.exports = function newLoadBalancer(clients) {
 		};
 	}
 
-	var currentClientIndex = 0;
-	var lastUsedClientLocal = null;
-	function nextClient() {
-		var i = currentClientIndex;
-		if (currentClientIndex <= clients.length - 2) {
-			currentClientIndex++;
-		} else {
-			currentClientIndex = 0;
-		}
-		console.log("Will make request to server " + clients[i].host);
-		lastUsedClientLocal = clients[i];
-		return clients[i];
-	}
-	function lastUsedClientHost() { // Intended for testing only (so far that is)
-		if (lastUsedClientLocal)
-			return lastUsedClientLocal.host;
-		else
-			return null;
-	}
-	function clientsLength() {
-		return clients.length;
-	}
-	function setIndex(i) {
-		if (i >= 0 && i <= clients.length-1 && typeof i === "number") {
-			currentClientIndex = i;
-			lastUsedClientLocal = clients[i];
-		}
-	}
-	function index() {
-		return currentClientIndex;
-	}
 	function setTimeOut(newTimeOut) {
 		timeOut = newTimeOut;
 	}
 
+	function getClientIterator() {
+		return clientIterator;
+	}
+
 	return {
 		passOn: passOn,
-		lastUsedClientHost: lastUsedClientHost,
-		clientsLength: clientsLength,
-		setIndex: setIndex,
-		index: index,
-		setTimeOut: setTimeOut
+		setTimeOut: setTimeOut,
+		getClientIterator: getClientIterator
 	}
 }
 
