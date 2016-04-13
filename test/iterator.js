@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 
-var iterator = require('../routes/iterator')(["foo", "baz", "car", "jar"]);
+var iterator = require('../modules/load-balancer/iterator')(["foo", "baz", "car", "jar"]);
 
 describe("Test iterator", function() {
 
